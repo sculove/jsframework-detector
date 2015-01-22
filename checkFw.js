@@ -1,5 +1,5 @@
 var _checkFWScript = (function() {
-	var framework = ["jindo", "JC", "JMC", "jQuery", "_", "Backbone", "angular", "React", "requirejs", "jQueryMobile", "Knockout", "Ember", "Handlebars", "Polymer"],
+	var framework = ["jindo", "JC", "JMC", "jQuery", "_", "Backbone", "angular", "React", "requirejs", "jQueryMobile", "jQueryUI", "Knockout", "Ember", "Handlebars", "Polymer"],
 		check = {},
 		count = 3,
 		items = [];
@@ -84,6 +84,7 @@ var _checkFWScript = (function() {
 				case "JMC" : return !check[s] && 'jindo' in window && jindo.m;
 				case "JC" : return !check[s] && 'jindo' in window && jindo.Component;
 				case "jQueryMobile" : return !check[s] && 'jQuery' in window && 'mobile' in jQuery;
+				case "jQueryUI" : return !check[s] && 'jQuery' in window && 'ui' in jQuery;
 				case "Knockout" : return !check[s] && 'ko' in window;
 				default : return !check[s] && s in window;
 			}
@@ -195,6 +196,9 @@ var _checkFWScript = (function() {
 						break;
 					case "jQueryMobile" :
 						version = jQuery.mobile.version;
+						break;
+					case "jQueryUI" :
+						version = jQuery.ui.version || "pre 1.6";
 						break;
 					case "angular":
 						version = angular.version.full;
