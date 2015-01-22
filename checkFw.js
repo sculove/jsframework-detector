@@ -80,7 +80,7 @@ var _checkFWScript = (function() {
 		},
 		isFw: function(s) {
 			switch(s) {
-				case "jindo" : return !check[s] && (s in window || '$Jindo' in window);
+				case "jindo" : return !check[s] && (s in window || '$Jindo' in window  || 'JINDO' in window);
 				case "JMC" : return !check[s] && 'jindo' in window && jindo.m;
 				case "JC" : return !check[s] && 'jindo' in window && jindo.Component;
 				case "jQueryMobile" : return !check[s] && 'jQuery' in window && 'mobile' in jQuery;
@@ -91,19 +91,32 @@ var _checkFWScript = (function() {
 		_detectJindo : function() {
 			var version = "unknown";
 			try {
+				var isMobile = false;
 				if(typeof jindo != "undefined") {
 					version = jindo.$Jindo.VERSION || jindo.$Jindo().version || jindo.VERSION;
+					isMobile = typeof jindo.$Element._domready != "function";
 				} else {
 					version = $Jindo.VERSION || $Jindo().version || $.VERSION;
+					isMobile = typeof $Element._domready != "function";
 				}
 				if(version == "@version@"){
 					version = "2.1.0";
 				} else if(version == "$$version$$"){
 					version = "1.4.6";
 				}
+				// 2.0부터 모바일 버전이 존재함.
+				if(parseInt(version,10) >= 2) {
+					if(jindo && jindo.TYPE) {
+						isMobile = jindo.TYPE  == "desktop" ? false : true;
+					}
+					version = (isMobile ? "mobile " : "") + version;
+				}
 			} catch(e) {
 				if($$ && parseFloat($$.version,10) < 2.3) {
 					version = "under 1.3.x";
+				}
+				if(typeof JINDO != "undefined") {
+					version = "under 1.x";
 				}
 			}
 			return version;
@@ -188,6 +201,7 @@ var _checkFWScript = (function() {
 						break;
 				}
 				if (typeof version != "undefined") {
+					// console.log(v, version);
 					check[v] = true;
 					return {
 						"title": v,
