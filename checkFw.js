@@ -1,5 +1,5 @@
 var _checkFWScript = (function() {
-	var framework = ["jindo", "JC", "JMC", "jQuery", "_", "Backbone", "angular", "React", "requirejs"],
+	var framework = ["jindo", "JC", "JMC", "jQuery", "_", "Backbone", "angular", "React", "requirejs", "jQueryMobile", "Knockout", "Ember", "Handlebars", "Polymer"],
 		check = {},
 		count = 3,
 		items = [];
@@ -49,7 +49,7 @@ var _checkFWScript = (function() {
 					'color:#000',
 					'font-weight:normal',
 					'cursor:pointer',
-					'-webkit-transform:translateY(-100%)',
+					'-왜kit-transform:translateY(-100%)',
 					'transform:translateY(-100%)',
 					'-webkit-transition:all .5s ease',
 					'transition:all .5s ease',
@@ -63,6 +63,7 @@ var _checkFWScript = (function() {
 
 				// layer.innerHTML = str.substring(0,str.lastIndexOf("<br>"));
 				layer.innerHTML = str + "</ul>";
+
 				document.body.appendChild(layer);
 
 				setTimeout(function() {
@@ -78,13 +79,34 @@ var _checkFWScript = (function() {
 			}
 		},
 		isFw: function(s) {
-			if(s == "JC") {
-				return !check[s] && 'jindo' in window && jindo.Component;
-			} else if(s == "JMC") {
-				return !check[s] && 'jindo' in window && jindo.m;
-			} else {
-				return !check[s] && s in window;
+			switch(s) {
+				case "jindo" : return !check[s] && (s in window || '$Jindo' in window);
+				case "JMC" : return !check[s] && 'jindo' in window && jindo.m;
+				case "JC" : return !check[s] && 'jindo' in window && jindo.Component;
+				case "jQueryMobile" : return !check[s] && 'jQuery' in window && 'mobile' in jQuery;
+				case "Knockout" : return !check[s] && 'ko' in window;
+				default : return !check[s] && s in window;
 			}
+		},
+		_detectJindo : function() {
+			var version = "unknown";
+			try {
+				if(typeof jindo != "undefined") {
+					version = jindo.$Jindo.VERSION || jindo.$Jindo().version || jindo.VERSION;
+				} else {
+					version = $Jindo.VERSION || $Jindo().version || $.VERSION;
+				}
+				if(version == "@version@"){
+					version = "2.1.0";
+				} else if(version == "$$version$$"){
+					version = "1.4.6";
+				}
+			} catch(e) {
+				if($$ && parseFloat($$.version,10) < 2.3) {
+					version = "under 1.3.x";
+				}
+			}
+			return version;
 		},
 		_detectJMC: function() {
 			// JMC 버전
@@ -123,11 +145,12 @@ var _checkFWScript = (function() {
 			return jmc_version;
 		},
 		_detectFw: function(v) {
+			// console.log(v, this.isFw(v));
 			if (this.isFw(v)) {
 				var version = "";
 				switch (v) {
 					case "jindo":
-						version = jindo.$Jindo.VERSION || jindo.$Jindo().version || jindo.VERSION;
+						version = this._detectJindo();
 						break;
 					case "JC" :
 						version = "unknown";
@@ -139,26 +162,31 @@ var _checkFWScript = (function() {
 					case "JMC" :
 						version = this._detectJMC();
 						break;
+
 					case "_":
-						version = _.VERSION;
-						break;
 					case "Backbone":
-						version = Backbone.VERSION;
+					case "Ember" :
+					case "Handlebars" :
+						version = eval(v+ ".VERSION");
 						break;
+
+					case "React":
+					case "Knockout" :
+					case "requirejs":
+					case "Polymer":
+						version = eval(v+ ".version");
+						break;
+
 					case "jQuery":
 						version = jQuery.fn.jquery;
+						break;
+					case "jQueryMobile" :
+						version = jQuery.mobile.version;
 						break;
 					case "angular":
 						version = angular.version.full;
 						break;
-					case "React":
-						version = React.version;
-						break;
-					case "requirejs":
-						version = requirejs.version;
-						break;
 				}
-
 				if (typeof version != "undefined") {
 					check[v] = true;
 					return {
