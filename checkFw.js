@@ -1,5 +1,5 @@
 var _checkFWScript = (function() {
-	var framework = ["jindo", "JC", "JMC", "jQuery", "_", "Backbone", "angular", "React", "requirejs", "jQueryMobile", "jQueryUI", "Knockout", "Ember", "Handlebars", "Polymer"],
+	var framework = ["jindo", "JC", "JMC", "jQuery", "_", "Backbone", "angular", "React", "requirejs", "jQueryMobile", "jQueryUI", "Knockout", "Ember", "Handlebars", "Polymer","IScroll","Hammer"],
 		check = {},
 		count = 3,
 		items = [];
@@ -74,6 +74,7 @@ var _checkFWScript = (function() {
 				setTimeout(layer.onclick = function() {
 					layer.style.webkitTransform =
 					layer.style.transform = 'translateY(-100%)';
+					console.info("jsframework-info",items);
 				}, 4000);
 				return;
 			}
@@ -181,6 +182,7 @@ var _checkFWScript = (function() {
 					case "Backbone":
 					case "Ember" :
 					case "Handlebars" :
+					case "Hammer" :
 						version = eval(v+ ".VERSION");
 						break;
 
@@ -202,6 +204,9 @@ var _checkFWScript = (function() {
 						break;
 					case "angular":
 						version = angular.version.full;
+						break;
+					case "IScroll" :
+						version = IScroll.prototype.version;
 						break;
 				}
 				if (typeof version != "undefined") {
