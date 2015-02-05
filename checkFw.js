@@ -1,10 +1,18 @@
 var _checkFWScript = (function() {
-	var framework = ["jindo", "JC", "JMC", "jQuery", "_", "Backbone", "angular", "React", "requirejs", "jQueryMobile", "jQueryUI", "Knockout", "Ember", "Handlebars", "Polymer","IScroll","Hammer"],
+	var FRAMEWORKS = ["jindo", "JC", "JMC", "jQuery", "_", "Backbone", "angular", "React", "requirejs", "jQueryMobile", "jQueryUI", "Knockout", "Ember", "Handlebars", "Polymer","IScroll","Hammer"],
 		check = {},
 		count = 3,
 		items = [];
+	var JQUERY_METHOD = ["fn", "extend", "expando", "isReady", "error", "noop", "isFunction", "isArray", "isWindow", "isNumeric", "isEmptyObject", "isPlainObject", "type", "globalEval", "camelCase", "nodeName", "each", "trim", "makeArray", "inArray", "merge", "grep", "map", "guid", "proxy", "now", "support", "find", "expr", "unique", "text", "isXMLDoc", "contains", "filter", "dir", "sibling", "Callbacks", "Deferred", "when", "readyWait", "holdReady", "ready", "acceptData", "cache", "noData", "hasData", "data", "removeData", "_data", "_removeData", "queue", "dequeue", "_queueHooks", "access", "event", "removeEvent", "Event", "clone", "buildFragment", "cleanData", "swap", "cssHooks", "cssNumber", "cssProps", "style", "css", "Tween", "easing", "fx", "Animation", "speed", "timers", "valHooks", "attr", "removeAttr", "attrHooks", "propFix", "prop", "propHooks", "parseJSON", "parseXML", "active", "lastModified", "etag", "ajaxSettings", "ajaxSetup", "ajaxPrefilter", "ajaxTransport", "ajax", "getJSON", "getScript", "get", "post", "_evalUrl", "param", "parseHTML", "offset", "noConflict", "attrFix", "attrFn", "bindReady", "boxModel", "browser", "clean", "curCSS", "fragments", "isNaN", "nth", "props", "sub", "uaMatch", "uuid", "handleError", "httpData", "httpNotModified", "httpSuccess", "deletedIds", "handleComplete", "handleSuccess", "triggerGlobal", "bind", "Widget", "addDependents", "jqmData", "jqmRemoveData", "mobile", "removeWithDependents", "ui", "vmouse", "widget", "removeCookie",
 
-	framework.forEach(function(v, i, a) {
+		"argumentNames", "bindAsEventListener", "defer", "delay",
+		"abovethetop", "belowthefold", "inviewport", "leftofbegin", "rightoffold", "placeholder", "addOutsideEvent"
+	],
+	JC = ["Accordion", "AjaxHistory", "BrowseButton", "Cache", "Calendar", "Canvas", "CheckBox", "CircularRolling", "Clipboard", "Component", "DataBridge", "DatePicker", "DefaultTextValue", "Dialog", "DragArea" , "DropArea", "DynamicTree", "Effect", "FileUploader", "FloatingLayer", "Foggy", "Formatter", "HTMLComponent", "InlineTextEdit", "Keyframe", "LayerEffect", "LayerManager" , "LayerPosition", "LazyLoading", "ModalDialog", "Morph", "MouseGesture", "MultipleAjaxRequest", "NumberFormatter", "NumericStepper", "Pagination", "Rolling", "RollingChart", "RolloverArea", "RolloverClick", "ScrollBar", "ScrollBox", "SelectArea", "SelectBox", "Slider", "StarRating", "TabControl", "TextRange", "Timer", "Transition", "Tree", "UIComponent", "UploadQueue", "Visible","WatchInput"
+	],
+	JMC = ["Accordion","AjaxHistory","Animation","Calendar","CheckBox","CheckRadioCore","CircularFlicking","Component","ContractEffect","CorePagination","CoreScroll","CoreTab","Cover","CoverFlicking","Cube","CubeFlicking","CubeReveal","CurrencyValidator","DateValidator","Datepicker","Dialog","DragArea","DropArea","DynamicPlugin","Effect","EmailValidator","ExpandEffect","FadeEffect","Flick","Flicking","FlipEffect","FloatingLayer","IndexScroll","InfiniteCard","Keyframe","LayerEffect","LayerManager","LayerPosition","Loading","MoreContentButton","Morph","MovableCoord","NumberValidator","PageLayoutUI","PageNavigation","PopEffect","PreventClickEvent","PreviewFlicking","PullPlugin","RadioButton","RequireValidator","RevealCommon","RevealSidebarUI","Scroll","ScrollEnd","Selectbox","Slide","SlideEffect","SlideFlicking","SlideReveal","SlideTab","Slider","SwipeCommon","Tab","TelValidator","TextArea","TextInput","ToggleSlider","Touch","Transition","UIComponent","UrlValidator","Validation","Validator","Visible"];
+
+	FRAMEWORKS.forEach(function(v, i, a) {
 		check[v] = false;
 	});
 
@@ -12,7 +20,7 @@ var _checkFWScript = (function() {
 		detect: function() {
 			var isOK = true;
 			count--;
-			framework.forEach(function(v, i, a, t) {
+			FRAMEWORKS.forEach(function(v, i, a, t) {
 				t = this._detectFw(v);
 				// console.info(t);
 				t && items.push(t);
@@ -58,7 +66,7 @@ var _checkFWScript = (function() {
 
 				var str = "<ul>";
 				items.forEach(function(v,i,a) {
-					str += "<li>" + v.title + " <font color='red'>" + v.message + "</font> was detected</li>";
+					str += "<li>" + v.name + " <font color='red'>" + v.version + "</font> was detected</li>";
 				});
 
 				// layer.innerHTML = str.substring(0,str.lastIndexOf("<br>"));
@@ -74,10 +82,56 @@ var _checkFWScript = (function() {
 				setTimeout(layer.onclick = function() {
 					layer.style.webkitTransform =
 					layer.style.transform = 'translateY(-100%)';
+					window.___jsframework___ = items;
 					console.info("jsframework-info",items);
-				}, 4000);
+				}, 3000);
 				return;
 			}
+		},
+		_getDetailJQuery : function(properties) {
+			var plugins = [],
+				exist;
+			for(var p in jQuery) {
+				exist = false;
+				properties.forEach(function(v,i,a) {
+					if(p == v) {
+						exist = true;
+						return;
+					}
+				});
+				if(exist == false) {
+		            	if(!/^_/.test(p)) {
+			                plugins.push(p);
+			            }
+		      	}
+
+			}
+			return plugins.sort();
+		},
+		_getJindoJsDetail: function(name, properties) {
+			var components = [],
+				exist,
+				p,
+				target;
+			if (name == "JC") {
+				target = jindo;
+			} else if (name == "JMC") {
+				target = jindo.m;
+			}
+
+			for (p in target) {
+				exist = false;
+				properties.forEach(function(v) {
+					if(p == v) {
+						exist = true;
+						return;
+					}
+				});
+				if(exist)  {
+					components.push(p);
+				}
+			}
+			return components.sort();
 		},
 		isFw: function(s) {
 			switch(s) {
@@ -212,10 +266,15 @@ var _checkFWScript = (function() {
 				if (typeof version != "undefined") {
 					// console.log(v, version);
 					check[v] = true;
-					return {
-						"title": v,
-						"message": version
+					var returnVal = {
+						"name": v,
+						"version": version
 					};
+					("JC" == v) && (returnVal.detail = this._getJindoJsDetail(v, JC));
+					("JMC" == v) && (returnVal.detail = this._getJindoJsDetail(v, JMC));
+					('jQuery' == v) && (returnVal.detail = this._getDetailJQuery(JQUERY_METHOD));
+					return returnVal;
+
 				}
 			}
 		}
